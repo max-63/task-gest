@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style_projet.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <link rel="icon" href="{% static 'path/to/your/favicon.ico' %}" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body>
+    <div class="taches-regroupement-container">
+        {% for regroupement in taches_regroupement %}
+            <div class="taches-regroupement">
+                <h1>{{ regroupement.nom }}</h1>
+                <p>{{ regroupement.description }}</p>
+                {% if regroupement.est_terminee == True %}
+                    <button style="color: gold;">✅ Voir les tâches</button>
+                {% else %}
+                    <a href="{% url 'see_tasks' projet_name admin_hash regroupement.id %}" style="color: #f1c40f; background-color:#3498db; text-decoration: none;">⏳ Voir les tâches</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <div style="display: none;" id="messages-data" data-messages='{{ message_projet|safe }}'></div>
+    <div id="chat_projet" class="chat_projet">
+        <div id="message-list">
+            <!-- Les messages seront insérés ici par JavaScript -->
+        </div>
+        <div id="crer_message" class="crer_message">
+            <form action="{% url 'projet' projet_name admin_hash %}" method="POST">
+                {% csrf_token %}
+                <input type="text" name="message_projet" id="message_projet" placeholder="Écrire un message...">
+                <button type="submit">
+                    <i class="fas fa-envelope"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% load static %}
+    <script src="{% static 'js/message_projet.js' %}"></script>
+
+
+    <div class="crer_regroupement">
+        <button class="crer_regroupement_btn" id="creer_regroupement">Créer un regroupement</button>
+    </div>
+    <canvas id="donutChart" width="400" height="400"></canvas>
+
+    <div class="gantt-container" id="gantt-container">
+        <div class="gantt-tasks" id="gantt-tasks"></div>
+
+    </div>
+
+    <script type="text/javascript">
+        // Chargement des données JSON envoyées par Django
+        const tasksData = JSON.parse(`{{ tasks_data|safe }}`);
+
+        function drawarrowsvg_en_L(svg, x1, y1, x2, y2) {
+            // Crée la flèche horizontale (part du bord droit de la dépendance)
+            const horizontalArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            horizontalArrow.setAttribute("x1", x1 + 170); // Bord droit de la dépendance (tâche source)
+            horizontalArrow.setAttribute("y1", y1 + 15); // Y de la dépendance
+            horizontalArrow.setAttribute("x2", x1 + 170 + 30);// Bord gauche de la tâche dépendante (tâche cible)
+            horizontalArrow.setAttribute("y2", y1 + 15); // Y de la dépendance (pas de changement pour horizontal)
+            horizontalArrow.setAttribute("stroke", "black");
+            horizontalArrow.setAttribute("stroke-width", "2");
+            if (y2 > y1) {
+                horizontalArrow.setAttribute('y1', y1 - 9)
+                horizontalArrow.setAttribute('y2', y1 - 9)
+            }
+            
+            svg.appendChild(horizontalArrow);
+        
+            // Crée la flèche verticale (vers le bas ou vers le haut selon la position de y2)
+            const verticalArrow = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            verticalArrow.setAttribute("x1", x2 + 35); // Bord gauche de la tâche dépendante (tâche cible)
+            verticalArrow.setAttribute("y1", y1 + 15); // Y de la dépendance (pas de changement pour vertical)
+            verticalArrow.setAttribute("marker-end", "url(#arrow)"); // Pour ajouter la tête de la flèche
+            
+            if (y2 > y1) { // Si la tâche dépendante est en dessous de la tâche source, flèche vers le bas
+                verticalArrow.setAttribute("x2", x2 + 35);
+                verticalArrow.setAttribute("y2", y2  - 33); // Position du bas de la tâche dépendante
+                verticalArrow.setAttribute('y1', y1 - 9)
+
+            } else { // Si la tâche dépendante est au-dessus de la tâche source, flèche vers le haut
+                verticalArrow.setAttribute("x2", x2 + 35);
+                verticalArrow.setAttribute("y2", y2 + 40); // Position du haut de la tâche dépendante
+            }
+            
+            verticalArrow.setAttribute("stroke", "black");
+            verticalArrow.setAttribute("stroke-width", "2");
+            svg.appendChild(verticalArrow);
+        }
+        
+
+
+        // Calcul du total des tâches
+        const totalTaches = tasksData.reduce((acc, item) => acc + item.value, 0);
+
+        // Préparation des labels et des données pour Chart.js
+        const labels = tasksData.map(item => item.label);
+        const dataValues = tasksData.map(item => item.value);
+
+        // Création du graphique donut
+        const donutChart = new Chart(document.getElementById('donutChart'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#FF5733', '#8E44AD',
+                        '#FF9F40', '#FFCD56', '#4BC0C0', '#FFB6C1', '#5D4037',
+                        '#FF80AB', '#E57373', '#81C784', '#64B5F6', '#F06292',
+                        '#FFEB3B', '#00BCD4', '#8E24AA', '#FFC107', '#43A047',
+                        '#FF7043', '#9C27B0', '#8BC34A', '#607D8B', '#3F51B5'
+                    ],
+                    hoverBackgroundColor: [
+                        '#FF4066', '#3399FF', '#FFCC33', '#FF4511', '#7D3C8D',
+                        '#FF7F3D', '#FFBB33', '#40D9D9', '#FF8D9E', '#6D4C41',
+                        '#FF69B4', '#D32F2F', '#66BB6A', '#42A5F5', '#EC407A',
+                        '#FFF176', '#00ACC1', '#7B1FA2', '#FF9800', '#388E3C',
+                        '#FF5722', '#D500F9', '#8BC34A', '#455A64', '#303F9F'
+                    ],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const percentage = (tooltipItem.raw / totalTaches) * 100;
+                                return `${tooltipItem.label}: ${percentage.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gestion du bouton "Créer un regroupement"
+        document.getElementById("creer_regroupement").addEventListener("click", function() {
+            Swal.fire({
+                title: 'Créer un regroupement',
+                html: `
+                    <form method="POST" action="{% url 'creer_regroupement' projet_name admin_hash %}">
+                        {% csrf_token %}
+                        <label for="nom">Nom du regroupement</label>
+                        <input type="text" id="nom" name="nom" placeholder="Nom du regroupement" required>
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Description du regroupement" required></textarea>
+                        <button type="submit">Créer</button>
+                    </form>
+                `,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Annuler',
+                width: '600px',
+                padding: '20px',
+            });
+        });
+        const regroupementCouleurs = {};
+        tasksData.forEach((item, index) => {
+            regroupementCouleurs[item.label] = donutChart.data.datasets[0].backgroundColor[index];
+        });
+
+        // Fonction pour créer les barres du Gantt
+        fetch("{% url 'gantt_sans_date' projet_name %}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Données reçues : ", data);  // Vérification du contenu des données
+            const taskPositions = data.positions;  // Positions des tâches
+            const tasks = data.tasks;  // Liste des tâches
+
+            const users = data.users;
+
+            let userOptions = users.map(user => `<option value="${user}">${user}</option>`).join("");
+            console.log("users", userOptions);
+            
+
+            
+            console.log("Données Gantt:", taskPositions);
+
+            const ganttContainer = document.getElementById("gantt-container");
+            const ganttTasks = document.getElementById("gantt-tasks");
+
+            if (!ganttTasks) {
+                console.error("Le conteneur des tâches Gantt n'a pas été trouvé.");
+                return;
+            }
+
+            const taskWidth = 75;  // Largeur des barres
+            const taskHeight = 30;  // Hauteur des barres
+            let taskSpacing = 36;  // Espacement entre les tâches
+            const dependencySpacing = 165;  // Espacement en pixels entre les tâches (dépendant de leur position)
+
+            
+            
+            // Appliquer la largeur dynamique
+            
+
+            // Création d'un svg pour les flèches des tâches 
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("width", ganttTasks.scrollWidth); // On garde la largeur initiale mais ne la met pas à jour lors du scroll
+            svg.setAttribute("height", "100%");
+            svg.style.position = "absolute"; // Assurer qu'il soit en position absolue par rapport au gantt-container
+            svg.style.top = "0"; // Garde le haut du SVG aligné avec le conteneur
+            svg.style.left = "0"; // Garde la position gauche du SVG
+            svg.style.pointerEvents = "none"; // Désactive les événements sur l'élément SVG
+            ganttContainer.appendChild(svg);
+
+
+            // ajout d'un marker pour les fleches
+            const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+            marker.setAttribute("id", "arrow");
+            marker.setAttribute("markerWidth", "10");
+            marker.setAttribute("markerHeight", "10");
+            marker.setAttribute("refX", "0");
+            marker.setAttribute("refY", "3");
+            marker.setAttribute("orient", "auto");
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", "M0,0 L0,6 L9,3 z");
+            path.setAttribute("fill", "black");
+            marker.appendChild(path);
+            svg.appendChild(marker);
+
+            // Fonction pour ajuster la taille du SVG
+            function updateSVGSize() {
+                const ganttContainer = document.getElementById("gantt-container");
+                const svg = document.querySelector("svg");
+                
+                if (ganttContainer && svg) {
+                    svg.setAttribute("width", ganttContainer.scrollWidth);
+                    svg.setAttribute("height", ganttContainer.scrollHeight);
+                }
+            }
+
+            // Appliquer l'ajustement de la taille du SVG lorsque le conteneur est redimensionné ou défilé
+            window.addEventListener("resize", updateSVGSize);
+            document.getElementById("gantt-container").addEventListener("scroll", updateSVGSize);
+
+            // Appliquer la taille initiale
+            updateSVGSize();
+
+
+            // Boucle pour dessiner les barres de chaque tâche
+            tasks.forEach(task => {
+                const taskRow = document.createElement("div");
+                taskRow.classList.add("task-row");
+                taskRow.setAttribute("data-task-id", task.tache_id);
+                taskRow.setAttribute("draggable", true);
+
+                const taskBar = document.createElement("div");
+                taskBar.classList.add("gantt-bar");
+                taskBar.textContent = task.name;
+                taskBar.style.width = `${task.duree * taskWidth}px`; // La largeur de la barre dépend de la durée de la tâche
+
+                // Utilisation de la couleur de regroupement pour chaque tâche
+                const regroupementColor = regroupementCouleurs[task.regroupement[0]] || '#CCCCCC';
+                taskBar.style.backgroundColor = regroupementColor;
+
+                // Position verticale des tâches
+                const verticalPosition = taskSpacing * tasks.indexOf(task);
+                taskBar.style.top = `${verticalPosition}px`;
+
+                // Position horizontale des tâches selon la position calculée
+                let horizontalPosition = taskPositions[task.tache_id] //* dependencySpacing; // Utilisation des positions
+                taskBar.style.left = `${horizontalPosition}px`;
+
+                
+                const url = "{% url 'modifier_tache' projet_name 0 admin_hash %}".replace('0', task.tache_id);
+
+                taskRow.addEventListener("click", () => {
+                    
+
+                    Swal.fire({
+                        title: task.name,
+                        html: `
+                            <form method="POST" action="${url}">
+                                {% csrf_token %}
+                                <label for="nom">Nom de la tâche</label>
+                                <input type="text" id="nom" name="nom" value="${task.name}" required>
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" required>${task.description}</textarea>
+                                <label>Statu</label>
+
+                                <label>Est assigné à :</label>
+                                <select name="assignee_a" id="assignee_a">
+                                    <option value="null">-- Sélectionner un utilisateur --</option>
+                                    ${userOptions}
+                                </select>
+
+                                <select name="statu" id="statu" value="${task.est_terminee}" required>
+                                    <option value="0">A faire</option>
+                                    <option value="1">En cour</option>
+                                    <option value="2">Terminée</option>
+                                </select>
+                                <button type="submit">Modifier</button>
+                            </form>
+                        `,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        width: '600px',
+                        padding: '20px',
+                    });
+                });
+
+                taskRow.appendChild(taskBar);
+                ganttTasks.appendChild(taskRow);
+
+                // Dessin des flèches
+                task.dependances.forEach(dependencyId => {
+                    const dependencyTask = tasks.find(t => t.tache_id === dependencyId);
+                    if (!dependencyTask) {
+                        console.error(`La tâche ${task.tache_id} dépend de la tâche ${dependencyId}, mais cette dernière n'a pas été trouvée.`);
+                        return;
+                    }
+
+                    const dependencyPosition = taskPositions[dependencyId] //* dependencySpacing;
+                    const x1 = horizontalPosition;
+                    const y1 = verticalPosition + taskHeight / 2;
+                    const x2 = dependencyPosition;
+                    const y2 = taskSpacing * tasks.indexOf(dependencyTask) + taskHeight / 2;
+                    drawarrowsvg_en_L(svg, x2, y2, x1, y1);
+                });
+
+
+                // Ajout des événements de glisser-déposer
+                taskRow.addEventListener("dragstart", (evt) => {
+                    evt.dataTransfer.setData("taskId", task.tache_id);
+                });
+
+                taskRow.addEventListener("dragover", (evt) => {
+                    evt.preventDefault();
+                });
+
+                taskRow.addEventListener("drop", (evt) => {
+                    evt.preventDefault();
+                    const sourceTaskId = evt.dataTransfer.getData("taskId");
+                    const targetTaskId = taskRow.getAttribute("data-task-id");
+                    // Envoi de la nouvelle position au backend
+                    const csrftoken = Cookies.get('csrftoken');
+                    fetch('{% url "update_task_position" projet_name admin_hash %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken,
+                        },
+                        body: JSON.stringify({
+                            movedTaskId: sourceTaskId,
+                            targetTaskId: targetTaskId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log("Les positions des tâches ont été mises à jour avec succès.");
+                        } else {
+                            console.error("Erreur lors de la mise à jour des positions:", data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erreur lors de la requête AJAX:", error);
+                    });
+                });
+            });
+
+        })
+        .catch(error => {
+            console.error("Erreur lors de la récupération des données :", error);
+        });
+
+    </script>
+    
+</body>
+</html>

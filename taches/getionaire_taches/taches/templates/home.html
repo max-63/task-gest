@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register</title>
+    <link rel="stylesheet" href="../static/style_home.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Section Login -->
+        <div class="form-container left">
+            <h1>Login</h1>
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password">
+                </div>
+                <button type="submit">Se connecter</button>
+                
+            </form>
+        </div>
+
+        <!-- Section Register -->
+        <div class="form-container right">
+            <h1>Register</h1>
+            <form action="{% url 'register' %}" method="POST">
+                {% csrf_token %}
+                <div class="input-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" name="username" id="username">
+                </div>
+                <div class="input-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="password" id="password">
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email">
+                </div>
+                <button type="submit">S'enregistrer</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

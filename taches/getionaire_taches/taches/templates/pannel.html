@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pannel</title>
+    <link rel="stylesheet" href="../static/style_pannel.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+    {% load custom_filters %}
+    <style>
+        .progress-finished { background: linear-gradient(to right, #4caf50, #66bb6a); }
+        .progress-in-progress { background: linear-gradient(to right, #ff9800, #ffb74d); }
+        .progress-todo { background: linear-gradient(to right, #f44336, #e57373); }
+        .projet {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            
+        }
+    </style>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <header>
+        <button id="crer_projet">Créer un projet</button>
+    </header>
+    <!-- Légende des couleurs -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(to right, #4caf50, #66bb6a);"></div>
+            <span>Terminé</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(to right, #ff9800, #ffb74d);"></div>
+            <span>En cours</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: linear-gradient(to right, #f44336, #e57373);"></div>
+            <span>À faire</span>
+        </div>
+    </div>
+    <div id="projets"></div>
+    
+    <script>
+        document.getElementById("crer_projet").addEventListener("click", function() {
+            Swal.fire({
+                title: 'Créer un projet',
+                html: `
+                    <div>
+                        <form action="/crer_big_projet/" method="POST">
+                            {% csrf_token %}
+                            <label>Nom du projet principal</label>
+                            <input type="text" name="proj_princip" id="proj_princip">
+                            <label>Descritpion</label>
+                            <textarea name="descritpion" id="description"></textarea>
+                            <button type="submit">Créer le projet</button>
+                        </form>
+                    </div>`,
+                showConfirmButton: false,
+                customClass: {
+                    popup: '-popup',
+                    confirmButton: 'swal2-confirm',
+                    cancelBuswal2tton: 'swal2-cancel',
+                    input: 'swal2-input',
+                    textarea: 'swal2-textarea' // Ajout du style textarea !
+                }
+            });
+        });
+
+        const projets = JSON.parse("{{ projets_json|escapejs }}");
+        
+        projets.forEach(projet => {
+            if (projet.nom && projet.user_admin) {
+                const totalTaches = projet.tache_fini_nb + projet.tache_en_cour_nb + projet.tache_a_faire_nb;
+                let progressHtml = "";
+                
+                if (totalTaches > 0) {
+                    const pourcentageFinis = (projet.tache_fini_nb / totalTaches) * 100;
+                    const pourcentageEnCours = (projet.tache_en_cour_nb / totalTaches) * 100;
+                    const pourcentageAFaire = (projet.tache_a_faire_nb / totalTaches) * 100;
+                    progressHtml = `
+                        <div class="progress-container">
+                            <div class="progress-bar progress-finished" style="width: ${pourcentageFinis}%"></div>
+                            <div class="progress-bar progress-in-progress" style="width: ${pourcentageEnCours}%"></div>
+                            <div class="progress-bar progress-todo" style="width: ${pourcentageAFaire}%"></div>
+                        </div>`;
+                }
+                
+                document.getElementById("projets").innerHTML += `
+                    <div class="projet">
+                        <h2>${projet.nom}</h2>
+                        <p>${projet.description}</p>
+                        <a href="/big_projet/${projet.nom}/${projet.user_admin}/">Voir le projet</a>
+                        ${progressHtml}
+                    </div>`;
+            }
+        });
+    </script>
+</body>
+</html>
