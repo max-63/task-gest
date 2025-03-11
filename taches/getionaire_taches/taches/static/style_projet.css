@@ -349,9 +349,9 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
 /* Liste des messages (fixe avec scroll) */
 .message-list {
     flex-grow: 1 !important;
-    overflow-y: auto !important; /* Ajoute un scroll si nécessaire */
+    overflow-y: auto !important;
     height: 100% !important;
-    max-height: 380px !important; /* Fixe la hauteur de la zone des messages */
+    max-height: 380px !important;
     padding: 10px !important;
     border: 1px solid #ccc !important;
     border-radius: 8px !important;
@@ -363,25 +363,51 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     display: flex !important;
     margin-bottom: 10px !important;
     padding: 10px !important;
-    background-color: #f1c40f !important; /* Jaune */
-    border-radius: 8px !important;
-    color: white !important;
-    font-size: 14px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    max-width: 100% !important;
 }
 
-/* Messages envoyés */
+/* Message envoyé par l'utilisateur (à droite) */
 .message.sent {
+    justify-content: flex-end !important;
+}
+
+/* Message reçu (à gauche) */
+.message.received {
+    justify-content: flex-start !important;
+}
+
+.message-bubble {
+    display: flex;
+    align-items: center;
+    background-color: #f1c40f !important; /* Jaune */
+    border-radius: 20px !important;
+    padding: 10px 15px !important;
+    font-size: 14px !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    max-width: 80% !important;
+    word-wrap: break-word;
+}
+
+/* Message envoyé par l'utilisateur (à droite) */
+.message.sent .message-bubble {
     background-color: #3498db !important; /* Bleu */
+    color: white !important;
     align-self: flex-end !important;
 }
 
-
-/* Cacher les messages par défaut */
-#messages-data {
-    display: none;
+/* Message reçu (à gauche) */
+.message.received .message-bubble {
+    background-color: #ffd900 !important; /* Gris clair */
+    color: white !important;
+    align-self: flex-start !important;
 }
+
+/* Icône de l'utilisateur dans la bulle */
+.message-bubble i {
+    margin-right: 10px !important;
+    font-size: 18px !important;
+}
+
 /* Conteneur du champ de texte et du bouton */
 .input-container {
     position: relative !important;
@@ -402,20 +428,6 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     padding-right: 50px !important; /* Laisser de la place pour le bouton */
     box-sizing: border-box !important;
     margin-bottom: 0px;
-}
-
-/* Bouton d'envoi dans l'input */
-.message-submit-btn {
-    position: absolute !important;
-    right: 5px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    cursor: pointer !important;
-    background: none !important;
-    border: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
 }
 
 /* Style du bouton d'envoi */
@@ -442,7 +454,6 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     background-color: #e67e22 !important;
 }
 
-
 /* Positionnement de la bulle de chat */
 .btn-chat {
     position: fixed;
@@ -464,3 +475,18 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     font-size: 24px; /* Taille de l'icône */
     color: white;
 }
+
+
+
+/* Cacher les messages par défaut */
+#messages-data {
+    display: none;
+}
+/* Conteneur du champ de texte et du bouton */
+.input-container {
+    position: relative !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
