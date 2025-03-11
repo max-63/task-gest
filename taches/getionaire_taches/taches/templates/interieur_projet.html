@@ -18,46 +18,53 @@
     <div class="taches-regroupement-container">
         {% for regroupement in taches_regroupement %}
             <div class="taches-regroupement">
-                <h1>{{ regroupement.nom }}</h1>
-                <p>{{ regroupement.description }}</p>
+                <h1 class="taches-regroupement-title">{{ regroupement.nom }}</h1>
+                <p class="taches-regroupement-description">{{ regroupement.description }}</p>
                 {% if regroupement.est_terminee == True %}
-                    <button style="color: gold;">✅ Voir les tâches</button>
+                    <button class="taches-regroupement-button completed">✅ Voir les tâches</button>
                 {% else %}
-                    <a href="{% url 'see_tasks' projet_name admin_hash regroupement.id %}" style="color: #f1c40f; background-color:#3498db; text-decoration: none;">⏳ Voir les tâches</a>
+                    <a href="{% url 'see_tasks' projet_name admin_hash regroupement.id %}" class="taches-regroupement-link pending">⏳ Voir les tâches</a>
                 {% endif %}
             </div>
         {% endfor %}
     </div>
 
-
-    <div style="display: none;" id="messages-data" data-messages='{{ message_projet|safe }}'></div>
-    <div id="chat_projet" class="chat_projet">
-        <div id="message-list">
-            <!-- Les messages seront insérés ici par JavaScript -->
-        </div>
-        <div id="crer_message" class="crer_message">
-            <form action="{% url 'projet' projet_name admin_hash %}" method="POST">
-                {% csrf_token %}
-                <input type="text" name="message_projet" id="message_projet" placeholder="Écrire un message...">
-                <button type="submit">
-                    <i class="fas fa-envelope"></i>
-                </button>
-            </form>
+    <div id="chat-container" class="chat-container">
+        <div id="messages-data" style="display: none;" data-messages='{{ message_projet|safe }}'></div>
+    
+        <!-- Section des messages -->
+        <div id="chat_projet" class="chat-projet">
+            <div id="message-list" class="message-list">
+                <!-- Les messages seront insérés ici par JavaScript -->
+            </div>
+            <div id="crer_message" class="crer-message">
+                <form action="{% url 'projet' projet_name admin_hash %}" method="POST" class="message-form">
+                    {% csrf_token %}
+                    <div class="input-container">
+                        <input type="text" name="message_projet" id="message_projet" placeholder="Écrire un message..." class="message-input">
+                        <div class="message-submit-btn">
+                            <button type="submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
+    
+    
     {% load static %}
     <script src="{% static 'js/message_projet.js' %}"></script>
-
+    
 
     <div class="crer_regroupement">
         <button class="crer_regroupement_btn" id="creer_regroupement">Créer un regroupement</button>
     </div>
-    <canvas id="donutChart" width="400" height="400"></canvas>
+    <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
 
     <div class="gantt-container" id="gantt-container">
         <div class="gantt-tasks" id="gantt-tasks"></div>
-
     </div>
 
     <script type="text/javascript">

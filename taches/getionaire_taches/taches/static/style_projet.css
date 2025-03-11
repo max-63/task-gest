@@ -188,7 +188,7 @@ button[type="submit"] {
     border: none;
     border-radius: 5px;
     width: 100%;
-    margin-top: 15px;
+    /* margin-top: 15px; */
     font-size: 16px;
     cursor: pointer;
     transition: background 0.3s ease-in-out;
@@ -263,7 +263,7 @@ input:focus, textarea:focus {
 }
 
 input[type="text"], input[type="number"] {
-    height: 40px;
+    height: 20px;
 }
 
 textarea {
@@ -321,190 +321,123 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
 }
 
 /* Style général du chat */
-#chat_projet {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #ffffff; /* Fond blanc */
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    height: 500px;  /* Hauteur de la fenêtre de chat */
-    border: 2px solid #f1c40f; /* Bordure dorée */
+.chat-container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background-color: #ffffff !important;
+    border: 1px solid #f1c40f !important; /* Jaune */
+    border-radius: 10px !important;
+    padding: 20px !important;
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 20px auto !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+    height: 500px !important; /* Fixer la hauteur du conteneur */
 }
 
-/* Liste des messages (Zone d'affichage des messages) */
-#message-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 16px;
-    padding-right: 10px;
+/* Section des messages */
+.chat-projet {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    flex-grow: 1 !important;
+    overflow: hidden !important; /* Empêche le débordement */
 }
 
-/* Un message (envoi de message par l'utilisateur) */
+/* Liste des messages (fixe avec scroll) */
+.message-list {
+    flex-grow: 1 !important;
+    overflow-y: auto !important; /* Ajoute un scroll si nécessaire */
+    height: 100% !important;
+    max-height: 380px !important; /* Fixe la hauteur de la zone des messages */
+    padding: 10px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    background-color: #f9f9f9 !important;
+}
+
+/* Messages individuels */
 .message {
-    background-color: #3498db;  /* Fond bleu pour l'utilisateur */
-    color: white;
-    padding: 12px;
-    margin: 10px 0;
-    border-radius: 10px;
-    max-width: 80%;
-    word-wrap: break-word;
-    font-size: 16px;
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+    background-color: #f1c40f !important; /* Jaune */
+    border-radius: 8px !important;
+    color: white !important;
+    font-size: 14px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    max-width: 80% !important;
 }
 
-/* Un message de l'utilisateur (aligné à gauche) */
-.message.user {
-    align-self: flex-start;
-}
-
-/* Un message d'un autre utilisateur (aligné à droite) */
-.message.other {
-    align-self: flex-end;
-    background-color: #f39c12; /* Couleur dorée pour les messages des autres utilisateurs */
-}
-
-/* Ajouter une animation pour les messages qui apparaissent */
-.message {
-    animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Timestamp pour chaque message (affichage de l'heure sous chaque message) */
-.message .timestamp {
-    font-size: 12px;
-    color: #b9bbbe;
-    margin-top: 5px;
-}
-
-/* Style pour la partie d'écriture du message */
-.crer_message form {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    width: 100%;
-}
-
-#message_projet {
-    width: calc(100% - 40px); /* Prend toute la largeur sauf pour l'icône */
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-    resize: none; /* Empêche de redimensionner le champ */
-    height: 50px; /* Hauteur d'un message de 2 lignes */
-    line-height: 1.4;
-}
-
-#crer_message button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-#crer_message button:hover {
-    background-color: #2980b9;
-}
-
-/* Champ de saisie de texte pour le message */
-#message_projet {
-    width: 100%;
-    padding: 12px;
-    margin-right: 10px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #ffffff; /* Fond blanc */
-    color: #333;
-    font-size: 16px;
-    outline: none;
-}
-
-/* Apparence du bouton d'envoi */
-button[type="submit"] {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease-in-out;
-}
-
-button[type="submit"]:hover {
-    background-color: #2980b9;
-}
-
-/* Placeholder dans le champ de texte */
-#message_projet::placeholder {
-    color: #bbb;
-}
-
-/* Pour que le chat et la zone de saisie soient dans le même conteneur */
-#chat_projet {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+/* Messages envoyés */
+.message.sent {
+    background-color: #3498db !important; /* Bleu */
+    align-self: flex-end !important;
 }
 
 
-
-/* Zone d'édition des messages */
-#message_projet {
-    width: 85%;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    padding: 10px;
-    background-color: #fff;
+/* Cacher les messages par défaut */
+#messages-data {
+    display: none;
+}
+/* Conteneur du champ de texte et du bouton */
+.input-container {
+    position: relative !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
-#message_projet:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+/* Champ de texte pour le message */
+.message-input {
+    width: 100% !important;
+    font-size: 14px !important;
+    border-radius: 20px !important; /* Bords arrondis */
+    border: 1px solid #ccc !important;
+    background-color: #f5f5f5 !important;
+    height: 40px !important; /* Hauteur uniforme */
+    padding: 10px !important;
+    padding-right: 50px !important; /* Laisser de la place pour le bouton */
+    box-sizing: border-box !important;
+    margin-bottom: 0px;
 }
 
-/* Icône d'enveloppe dans le bouton */
-button[type="submit"] i {
-    margin-right: 8px;  /* Espace entre l'icône et le texte */
-    font-size: 18px;    /* Taille de l'icône */
+/* Bouton d'envoi dans l'input */
+.message-submit-btn {
+    position: absolute !important;
+    right: 5px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-/* Assurez-vous que le bouton garde une apparence fluide */
-button[type="submit"] {
-    display: flex;
-    align-items: center;
-    background-color: #f39c12;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease-in-out;
+/* Style du bouton d'envoi */
+.message-submit-btn button {
+    all: unset !important; /* Supprime les styles hérités */
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+    background-color: #f1c40f !important; /* Couleur du bouton */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.3s ease !important;
 }
 
-button[type="submit"]:hover {
-    background-color: #e67e22;
+/* Icône de l'avion en papier */
+.message-submit-btn button i {
+    color: white !important;
+    font-size: 16px !important;
+}
+
+/* Effet hover sur le bouton */
+.message-submit-btn button:hover {
+    background-color: #e67e22 !important;
 }
