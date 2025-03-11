@@ -368,7 +368,7 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     color: white !important;
     font-size: 14px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-    max-width: 80% !important;
+    max-width: 100% !important;
 }
 
 /* Messages envoyés */
@@ -440,4 +440,27 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
 /* Effet hover sur le bouton */
 .message-submit-btn button:hover {
     background-color: #e67e22 !important;
+}
+
+
+/* Positionnement de la bulle de chat */
+.btn-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 24px; /* Ajuster la taille de l'icône */
+}
+
+.btn-chat i {
+    font-size: 24px; /* Taille de l'icône */
+    color: white;
 }

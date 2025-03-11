@@ -29,16 +29,34 @@
         {% endfor %}
     </div>
 
-    <div id="chat-container" class="chat-container">
-        <div id="messages-data" style="display: none;" data-messages='{{ message_projet|safe }}'></div>
-    
-        <!-- Section des messages -->
-        <div id="chat_projet" class="chat-projet">
-            <div id="message-list" class="message-list">
-                <!-- Les messages seront insérés ici par JavaScript -->
-            </div>
-            <div id="crer_message" class="crer-message">
-                <form action="{% url 'projet' projet_name admin_hash %}" method="POST" class="message-form">
+    <!-- Ton bouton pour afficher le chat -->
+    <div class="btn-chat">
+        <i id="show-chat-btn" class="fas fa-comment"></i>
+
+    </div>
+
+    <!-- Ton conteneur de messages (cache les messages en initial) -->
+    <div id="messages-data" style="display: none;" data-messages='{{ message_projet|safe }}'></div>
+
+    <script>
+        // Afficher le chat avec les messages dans SweetAlert2
+        document.getElementById("show-chat-btn").addEventListener("click", function() {
+            const messagesElement = document.getElementById("messages-data");
+            const messages = JSON.parse(messagesElement.dataset.messages);
+
+            // Trier les messages par date
+            messages.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // Créer le contenu HTML pour afficher les messages
+            let messageContent = "<div class='message-list'>";
+            messages.forEach(message => {
+                messageContent += `<div class='message'><strong>${message.user}</strong>: ${message.texte}</div>`;
+            });
+            messageContent += "</div>";
+
+            // Ajouter le formulaire pour envoyer un message
+            let formContent = `
+                <form id="message-form" action="{% url 'projet' projet_name admin_hash %}" method="POST">
                     {% csrf_token %}
                     <div class="input-container">
                         <input type="text" name="message_projet" id="message_projet" placeholder="Écrire un message..." class="message-input">
@@ -49,9 +67,28 @@
                         </div>
                     </div>
                 </form>
-            </div>
-        </div>
-    </div>
+            `;
+
+            // Afficher les messages et le formulaire dans SweetAlert2
+            Swal.fire({
+                title: 'Messages du Projet',
+                html: messageContent + formContent,
+                showCloseButton: true,
+                width: 600,
+                padding: '1em',
+                showConfirmButton: false,
+                confirmButtonColor: '#3085d6',
+                didOpen: () => {
+                    // Le formulaire sera soumis comme une requête classique Django lors de l'envoi
+                    const form = document.getElementById("message-form");
+                    form.addEventListener("submit", function(event) {
+                        // La soumission sera traitée par Django directement
+                    });
+                }
+            });
+        });
+    </script>
+
     
     
     {% load static %}
