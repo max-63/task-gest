@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'tasks_regroup.css' %}">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Tâches du regroupement: {{ regroupement_actuel.nom }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nom de la tâche</th>
+                <th>Description</th>
+                <th>Regroupement</th>
+                <th>Dépend de</th>
+                <th>Statut</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tache in taches %}
+                <tr data-task-id="{{ tache.id }}" class="task-row">
+                    <td>{{ tache.nom }}</td>
+                    <td>{{ tache.description }}</td>
+                    <td>{{ regroupement_actuel.nom }}</td>
+                    <td>
+                        {% if tache.dependantes_list %}
+                            {% for dependance in tache.dependantes_list %}
+                                {{ dependance.nom }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            Aucun
+                        {% endif %}
+                    </td>
+                    
+                    <td>
+                        {% if tache.est_terminee %}
+                            ✅ Terminé
+                        {% else %}
+                            ⏳ En cours
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button id="create_task">Créer une tâche</button>
+
+    <script>
+        document.getElementById("create_task").addEventListener("click", function() {
+            let users = JSON.parse("{{ users|escapejs }}");  // Convertir en objet JS
+            console.log(users)
+            let userOptions = users.map(user => `<option value="${user}">${user}</option>`).join("");
+        
+            Swal.fire({
+                title: 'Créer une tâche',
+                html: `
+                    <form id="task-form" method="POST" action="{% url 'see_tasks' projet_name admin_hash regroupement_id %}">
+                        {% csrf_token %}
+                        
+                        <label>Nom de la tâche</label>
+                        <input type="text" name="nom" id="nom" placeholder="Nom de la tâche" required>
+        
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Description de la tâche" required></textarea>
+        
+                        <label>Est assigné à :</label>
+                        <select name="assignee_a" id="assignee_a">
+                            <option value="null">-- Sélectionner un utilisateur --</option>
+                            ${userOptions}
+                        </select>
+        
+                        <label for="regroupement">Choisissez un regroupement</label>
+                        <select id="regroupement" name="regroupement">
+                            <option value="">-- Sélectionner un regroupement --</option>
+                            {% for regroupement in regroupements %}
+                                <option value="{{ regroupement.id }}">{{ regroupement.nom }}</option>
+                            {% endfor %}
+                        </select>
+        
+                        <label for="depend">Dépend de :</label>
+                        <div id="tasks-container" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
+                            <p>Sélectionnez un regroupement pour voir les tâches...</p>
+                        </div>
+        
+                        <input type="hidden" id="depend-hidden" name="depend"> 
+        
+                        <button type="submit" id="submit-task">Créer</button>
+                    </form>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                width: '600px',
+                padding: '20px',
+                willOpen: () => {
+                    document.getElementById('regroupement').addEventListener('change', function() {
+                        var regroupementId = this.value;
+                        var tasksContainer = document.getElementById('tasks-container');
+                        tasksContainer.innerHTML = "<p>Chargement des tâches...</p>";
+        
+                        if (regroupementId) {
+                            fetch(`/tasks_for_regroupement/${regroupementId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                tasksContainer.innerHTML = "";
+                                if (data.taches.length > 0) {
+                                    data.taches.forEach(function(tache) {
+                                        var taskElement = document.createElement('div');
+                                        taskElement.innerHTML = `
+                                            <input type="checkbox" class="depend-checkbox" value="${tache.id}" id="task_${tache.id}">
+                                            <label for="task_${tache.id}">${tache.nom}</label>
+                                        `;
+                                        tasksContainer.appendChild(taskElement);
+                                    });
+                                } else {
+                                    tasksContainer.innerHTML = "<p>Aucune tâche disponible.</p>";
+                                }
+                            });
+        
+                        } else {
+                            tasksContainer.innerHTML = "<p>Sélectionnez un regroupement pour voir les tâches...</p>";
+                        }
+                    });
+        
+                    // Ajouter un event listener pour la soumission du formulaire
+                    document.getElementById("submit-task").addEventListener("click", function(event) {
+                        event.preventDefault(); // Empêche l'envoi automatique
+        
+                        var selectedDependences = [];
+                        document.querySelectorAll(".depend-checkbox:checked").forEach(function(checkbox) {
+                            selectedDependences.push(checkbox.value);
+                        });
+        
+                        // Ajouter les valeurs cochées au champ hidden
+                        selectedDependences.forEach(dep => {
+                            let input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "depend";
+                            input.value = dep;
+                            document.getElementById("task-form").appendChild(input);
+                        });
+                        
+        
+                        // Soumettre le formulaire après mise à jour des dépendances
+                        document.getElementById("task-form").submit();
+                    });
+                }
+            });
+        });
+        </script>
+        <script type="text/javascript">
+            // Sélectionner toutes les lignes du tableau
+            const taskRows = document.querySelectorAll('.task-row');
+            let users_gg = JSON.parse("{{ users|escapejs }}");  // Convertir en objet JS
+            console.log(users_gg)
+            let userOptions = users_gg.map(user => `<option value="${user}">${user}</option>`).join("");
+            // Ajouter un écouteur d'événements pour chaque ligne de tâche
+            taskRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    // Récupérer l'ID de la tâche associée à cette ligne
+                    const taskId = row.getAttribute('data-task-id');
+                    
+                    // Récupérer les informations de la tâche (vous pouvez ajuster selon ce que vous voulez afficher)
+                    const taskName = row.cells[0].textContent;
+                    const taskDescription = row.cells[1].textContent;
+                    const taskStatus = row.cells[4].textContent;
+        
+                    // Afficher un SweetAlert avec les informations de la tâche
+                    Swal.fire({
+                        title: taskName,
+                        html: `
+                            <p><strong>Description:</strong> ${taskDescription}</p>
+                            <p><strong>Statut:</strong> ${taskStatus}</p>
+                            <label for="depend">Dépend de :</label>
+                            <div id="tasks-container" style="margin-top: 10px; max-height: 150px; overflow-y: auto;">
+                                <p>Sélectionnez un regroupement pour voir les tâches...</p>
+                            </div>
+                        `,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                        showCloseButton: true,
+                    });
+                });
+            });
+        </script>
+        
+    
+</body>
+</html>

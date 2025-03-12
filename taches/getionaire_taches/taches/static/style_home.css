@@ -1,0 +1,125 @@
+/* Réinitialisation de base pour éviter les marges et paddings par défaut */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Couleurs principales */
+:root {
+    --primary-color: #f1c40f;  /* Jaune clair */
+    --secondary-color: #3498db;  /* Bleu clair */
+    --background-color: #fff;  /* Blanc */
+    --text-color: #333;  /* Gris foncé pour le texte */
+    --border-color: #ddd;  /* Gris clair pour les bordures */
+}
+
+/* Style global du body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+
+}
+
+/* Conteneur principal */
+.container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 1000px;
+}
+
+/* Formulaire commun */
+.form-container {
+    width: 45%;
+    background-color: var(--primary-color);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-container h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--background-color);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--secondary-color);
+    border: none;
+    color: var(--background-color);
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Section login */
+.left {
+    margin-right: 2rem;
+}
+
+/* Section register */
+.right {
+    margin-left: 2rem;
+}
+
+/* Ajout de style pour le texte de lien (connexion ou inscription) */
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Style responsive pour les petits écrans */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .form-container {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}

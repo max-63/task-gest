@@ -1,0 +1,492 @@
+/* Style général */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Conteneur des regroupements */
+.taches-regroupement-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.taches-regroupement {
+    background-color: #ffffff;
+    border: 2px solid #f1c40f;
+    border-radius: 10px;
+    padding: 20px;
+    width: 280px;
+    text-align: center;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.taches-regroupement:hover {
+    transform: translateY(-5px);
+}
+
+.taches-regroupement h1 {
+    color: #3498db;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.taches-regroupement p {
+    color: #666;
+    font-size: 14px;
+}
+
+.taches-regroupement button,
+.taches-regroupement a {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.taches-regroupement button {
+    background-color: gold;
+    color: black;
+}
+
+.taches-regroupement a {
+    background-color: #bb86fc;
+    color: white;
+}
+
+.taches-regroupement button:hover,
+.taches-regroupement a:hover {
+    opacity: 0.8;
+}
+
+/* Bouton "Créer un regroupement" */
+.crer_regroupement {
+    text-align: center;
+    margin-top: 20px;
+}
+.crer_regroupement_btn {
+    color: #f1c40f; 
+    background-color:#3498db; 
+    text-decoration: none;
+}
+
+#creer_regroupement {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#creer_regroupement:hover {
+    background-color: #e68900;
+}
+
+/* Conteneur pour le diagramme de Gantt */
+.gantt-container {
+    width: 60%;  /* Ajuste la largeur du diagramme de Gantt */
+    overflow-x: auto;
+    overflow-y: auto;
+    height: 600px; /* Définit une hauteur pour le diagramme de Gantt */
+    position: relative; /* Ajouté pour permettre aux tâches positionnées absolument de se placer correctement */
+    margin-top: 3rem;
+    border: 2px solid #f1c40f;  /* Bordure jaune (plus foncée pour une meilleure visibilité) */
+    border-radius: 8px;  /* Coins arrondis */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  /* Ajoute une ombre légère pour plus de profondeur */
+    background-color: #ffffff;
+}
+
+.gantt-tasks {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+}
+
+.gantt-bar {
+    cursor: move; /* Assure que l'on voit que l'élément peut être déplacé */
+    position: absolute;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+}
+
+
+.gantt-bar:hover {
+    transform: scale(1.05);
+}
+
+.diagram-container svg {
+    display: block;
+    width: max-content; /* Adapte la largeur au contenu */
+    min-width: 100%; /* Empêche le SVG d'être plus petit que son conteneur */
+}
+
+
+
+/* Style du graphique */
+canvas#donutChart {
+    display: block;
+    margin: 20px auto;
+    max-width: 400px;
+}
+
+/* Styles pour les inputs et textareas */
+input[type="text"], textarea, select {
+    width: 100% !important;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Spécifique aux textareas */
+textarea {
+    resize: vertical;
+}
+
+/* Styles pour les options du select */
+select {
+    background-color: #fff;
+    color: #333;
+}
+
+/* Styles pour les options */
+option {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Ajouter un focus pour le select */
+select:focus, input[type="text"]:focus, textarea:focus {
+    outline: none;
+    border-color: #2ecc71;
+    box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
+}
+
+/* Bouton principal (soumission) */
+button[type="submit"] {
+    background-color: #2ecc71;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    /* margin-top: 15px; */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button[type="submit"]:hover {
+    background-color: #27ae60;
+}
+
+/* Bouton annuler */
+button[type="button"].cancel {
+    background-color: #e74c3c !important;
+    color: white !important;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button[type="button"].cancel:hover {
+    background-color: #c0392b !important;
+}
+
+/* Styles du popup */
+.swal2-popup {
+    width: 600px !important;
+    padding: 20px !important;
+    font-family: 'Arial', sans-serif;
+    border-radius: 10px;
+}
+
+/* Titre */
+.swal2-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Labels des inputs */
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #444;
+}
+
+/* Style des formulaires */
+form {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* Style des champs de texte (input et textarea) */
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    transition: border 0.3s ease;
+}
+
+input:focus, textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+input[type="text"], input[type="number"] {
+    height: 20px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Style des boutons */
+button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button:active {
+    background-color: #1c6ea4;
+}
+
+/* Style pour les liens */
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Boutons spécifiques pour "Voir les tâches" */
+button[style="color: gold;"] {
+    background-color: #2ecc71;
+    border: 1px solid #27ae60;
+}
+
+a[style="color: #f1c40f; background-color:#3498db;"] {
+    padding: 10px 15px;
+    border-radius: 5px;
+    background-color: #f39c12;
+    color: #fff;
+    font-weight: bold;
+}
+
+a[style="color: #f1c40f; background-color:#3498db;"]:hover {
+    background-color: #e67e22;
+}
+
+/* Style général du chat */
+.chat-container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background-color: #ffffff !important;
+    border: 1px solid #f1c40f !important; /* Jaune */
+    border-radius: 10px !important;
+    padding: 20px !important;
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 20px auto !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+    height: 500px !important; /* Fixer la hauteur du conteneur */
+}
+
+/* Section des messages */
+.chat-projet {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    flex-grow: 1 !important;
+    overflow: hidden !important; /* Empêche le débordement */
+}
+
+/* Liste des messages (fixe avec scroll) */
+.message-list {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+    height: 100% !important;
+    max-height: 380px !important;
+    padding: 10px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    background-color: #f9f9f9 !important;
+}
+
+/* Messages individuels */
+.message {
+    display: flex !important;
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+}
+
+/* Message envoyé par l'utilisateur (à droite) */
+.message.sent {
+    justify-content: flex-end !important;
+}
+
+/* Message reçu (à gauche) */
+.message.received {
+    justify-content: flex-start !important;
+}
+
+.message-bubble {
+    display: flex;
+    align-items: center;
+    background-color: #f1c40f !important; /* Jaune */
+    border-radius: 20px !important;
+    padding: 10px 15px !important;
+    font-size: 14px !important;
+    color: white !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    max-width: 80% !important;
+    word-wrap: break-word;
+}
+
+/* Message envoyé par l'utilisateur (à droite) */
+.message.sent .message-bubble {
+    background-color: #3498db !important; /* Bleu */
+    color: white !important;
+    align-self: flex-end !important;
+}
+
+/* Message reçu (à gauche) */
+.message.received .message-bubble {
+    background-color: #ffd900 !important; /* Gris clair */
+    color: white !important;
+    align-self: flex-start !important;
+}
+
+/* Icône de l'utilisateur dans la bulle */
+.message-bubble i {
+    margin-right: 10px !important;
+    font-size: 18px !important;
+}
+
+/* Conteneur du champ de texte et du bouton */
+.input-container {
+    position: relative !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Champ de texte pour le message */
+.message-input {
+    width: 100% !important;
+    font-size: 14px !important;
+    border-radius: 20px !important; /* Bords arrondis */
+    border: 1px solid #ccc !important;
+    background-color: #f5f5f5 !important;
+    height: 40px !important; /* Hauteur uniforme */
+    padding: 10px !important;
+    padding-right: 50px !important; /* Laisser de la place pour le bouton */
+    box-sizing: border-box !important;
+    margin-bottom: 0px;
+}
+
+/* Style du bouton d'envoi */
+.message-submit-btn button {
+    all: unset !important; /* Supprime les styles hérités */
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+    background-color: #f1c40f !important; /* Couleur du bouton */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background-color 0.3s ease !important;
+}
+
+/* Icône de l'avion en papier */
+.message-submit-btn button i {
+    color: white !important;
+    font-size: 16px !important;
+}
+
+/* Effet hover sur le bouton */
+.message-submit-btn button:hover {
+    background-color: #e67e22 !important;
+}
+
+/* Positionnement de la bulle de chat */
+.btn-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 24px; /* Ajuster la taille de l'icône */
+}
+
+.btn-chat i {
+    font-size: 24px; /* Taille de l'icône */
+    color: white;
+}
+
+
+
+/* Cacher les messages par défaut */
+#messages-data {
+    display: none;
+}
+/* Conteneur du champ de texte et du bouton */
+.input-container {
+    position: relative !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+}
+

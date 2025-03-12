@@ -1,0 +1,234 @@
+/* Réinitialisation des marges et paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Définition des couleurs */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #ffc107;
+    --background-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg-color: #ffffff;
+    --border-color: #dee2e6;
+    --button-bg-color: #0056b3;
+    --button-hover-color: #004085;
+}
+
+/* Style global */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+header button:hover {
+    background-color: var(--button-hover-color);
+}
+
+/* Conteneur des projets */
+.projet {
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.projet h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.projet p {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 20px;
+    background-color: var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 15px;
+    position: relative;
+    display: flex; /* Ajout de flexbox */
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-finished {
+    background: #00ff3c;
+}
+
+.progress-in-progress {
+    background: #ffbf00;
+}
+
+.progress-todo {
+    background: #ff0019;
+}
+
+.legend {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+}
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    header button {
+        width: 100%;
+    }
+}
+
+/* Personnalisation de SweetAlert */
+.swal2-popup {
+    font-family: 'Arial', sans-serif;  /* Uniformisation avec ton site */
+    background: var(--card-bg-color);  /* Même fond que les cartes */
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.swal2-title {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.swal2-content {
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+/* Personnalisation des boutons */
+.swal2-confirm {
+    background: var(--primary-color) !important;
+    color: white !important;
+    font-size: 1rem !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    transition: background 0.3s !important;
+}
+
+.swal2-confirm:hover {
+    background: var(--button-hover-color) !important;
+}
+
+/* Bouton d'annulation */
+.swal2-cancel {
+    background: var(--secondary-color) !important;
+    color: white !important;
+    font-size: 1rem !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    transition: background 0.3s !important;
+}
+
+.swal2-cancel:hover {
+    background: #d39e00 !important;
+}
+
+/* Input personnalisé */
+input {
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+/* Chargement */
+.swal2-loader {
+    border-color: var(--primary-color) transparent transparent !important;
+}
+
+/* Personnalisation du textarea dans SweetAlert */
+textarea {
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    min-height: 100px; /* Taille minimale */
+    max-height: 200px; /* Taille max pour éviter l'overflow */
+    resize: vertical; /* Permet de redimensionner verticalement */
+    background: var(--card-bg-color);
+    color: var(--text-color);
+}
+
+/* Focus sur le textarea */
+textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Style du bouton submit dans SweetAlert */
+button {
+    background: var(--primary-color); /* Couleur principale */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+/* Effet au survol */
+button:hover {
+    background: var(--button-hover-color);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
