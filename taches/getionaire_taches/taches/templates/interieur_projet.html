@@ -12,9 +12,11 @@
     <link rel="icon" href="{% static 'path/to/your/favicon.ico' %}" type="image/x-icon">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
 <body>
+    <div id="user-actu" data-user-actu="{{ user }}" style="display: none;"></div>
+    <div id="user-admin-const" data-user-admin="{{ user_admin }}" style="display: none;"></div>
+
     <div class="taches-regroupement-container">
         {% for regroupement in taches_regroupement %}
             <div class="taches-regroupement">
@@ -27,16 +29,66 @@
                 {% endif %}
             </div>
         {% endfor %}
+
     </div>
 
-    <!-- Ton bouton pour afficher le chat -->
-    <div class="btn-chat">
-        <i id="show-chat-btn" class="fas fa-comment"></i>
+    <div id="data-url-add" style="display: none;" data-url-add-qqun="{% url "add_qqun_to_projet" projet_id %}"></div>
+    <div id="params" class="params-div">
+        <i id="params" class="fas fa-cog"></i>
+    </div>
+    
 
+    <!-- Ton bouton pour afficher le chat -->
+    <div class="btn-chat" id="show-chat-btn">
+        <i id="show-chat-btn" class="fas fa-comment"></i>
+        <span id="show-chat-btn">Chat du projet</span>
     </div>
 
     <!-- Ton conteneur de messages (cache les messages en initial) -->
     <div id="messages-data" style="display: none;" data-messages='{{ message_projet|safe }}'></div>
+
+
+
+    <script>
+        const userActuDiv = document.getElementById('user-actu');
+        const userAdminConstDiv = document.getElementById('user-admin-const');
+
+        // Vérifier si les éléments existent avant d'essayer de récupérer leurs attributs
+        const userActu = userActuDiv.getAttribute('data-user-actu');
+        const userAdminConst = userAdminConstDiv.getAttribute('data-user-admin');
+
+        // Déclaration de la variable en dehors de l'if
+        let userActuisAdmin = userActu === userAdminConst;
+
+        console.log("L'utilisateur est admin :", userActuisAdmin);
+
+        const divUrlAddQqun = document.getElementById('data-url-add');
+        const urlAddQqun = divUrlAddQqun ? divUrlAddQqun.getAttribute('data-url-add-qqun') : null;
+        console.log(urlAddQqun);
+
+        document.getElementById('params').addEventListener("click", function() {
+            Swal.fire({
+                title: 'Paramètres',
+                html: `
+                    ${userActuisAdmin ? `
+                        <div id="div-inviter">
+                            <form method="POST" action="${urlAddQqun}">
+                                {% csrf_token %}
+                                <input type="text" name="pseudo" id="pseudo" placeholder="Nom d'utilisateur">
+                                <button type="submit">Inviter</button>
+                            </form>
+                        </div>` : ''}
+                `,
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        });
+        // je veux un doc.addeventlistener click
+        
+
+    </script>
+
+
 
     <script>
         document.getElementById("show-chat-btn").addEventListener("click", function() {
@@ -59,7 +111,8 @@
                 messageContent += `
                     <div class='${messageClass}'>
                         <div class="message-bubble">
-                            ${icon} <strong>${message.user}</strong>: ${message.texte}
+                            ${icon} <strong>${message.user}</strong>: 
+                            <div>${message.texte}</div>
                         </div>
                     </div>
                 `;
@@ -99,13 +152,7 @@
             });
         });
     </script>
-    
-    
 
-    
-    
-    {% load static %}
-    <script src="{% static 'js/message_projet.js' %}"></script>
     
 
     <div class="crer_regroupement">
@@ -113,11 +160,28 @@
     </div>
     <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
 
+
+    <label class="switch">
+        <input type="checkbox" id="toggleSwitch">
+        <span class="slider"></span>
+    </label>
+
+    <p id="state" style="display: none;">État: 0</p>
     <div class="gantt-container" id="gantt-container">
         <div class="gantt-tasks" id="gantt-tasks"></div>
-    </div>
+    </div> 
+    
 
     <script type="text/javascript">
+
+        let switchState = 0; // Variable qui stocke l'état du switch
+
+        document.getElementById("toggleSwitch").addEventListener("change", function() {
+            switchState = this.checked ? 1 : 0;
+            document.getElementById("state").textContent = "État: " + switchState;
+            console.log("Switch State:", switchState); // Affiche dans la console
+        });
+    
         // Chargement des données JSON envoyées par Django
         const tasksData = JSON.parse(`{{ tasks_data|safe }}`);
 
@@ -158,6 +222,13 @@
             svg.appendChild(verticalArrow);
         }
         
+        function supprimerToutesFleches(svg) {
+            // Sélectionner toutes les flèches (lignes) dans le SVG
+            const arrows = svg.querySelectorAll("line");
+            arrows.forEach(arrow => {
+                svg.removeChild(arrow); // Supprimer chaque flèche du SVG
+            });
+        }
 
 
         // Calcul du total des tâches
@@ -378,21 +449,66 @@
                 taskRow.appendChild(taskBar);
                 ganttTasks.appendChild(taskRow);
 
-                // Dessin des flèches
                 task.dependances.forEach(dependencyId => {
-                    const dependencyTask = tasks.find(t => t.tache_id === dependencyId);
+                    const dependencyTask = data.tasks.find(t => t.tache_id === dependencyId);
                     if (!dependencyTask) {
                         console.error(`La tâche ${task.tache_id} dépend de la tâche ${dependencyId}, mais cette dernière n'a pas été trouvée.`);
                         return;
                     }
 
-                    const dependencyPosition = taskPositions[dependencyId] //* dependencySpacing;
+                    const dependencyPosition = data.positions[dependencyId];
                     const x1 = horizontalPosition;
                     const y1 = verticalPosition + taskHeight / 2;
                     const x2 = dependencyPosition;
-                    const y2 = taskSpacing * tasks.indexOf(dependencyTask) + taskHeight / 2;
+                    const y2 = taskSpacing * data.tasks.indexOf(dependencyTask) + taskHeight / 2;
                     drawarrowsvg_en_L(svg, x2, y2, x1, y1);
                 });
+
+
+
+
+
+
+
+
+
+                document.getElementById('toggleSwitch').addEventListener("change", function() {
+                    const svg = document.querySelector('svg');
+                    if (this.checked) {  // Si le slider est à droite (activé)
+                        svg.style.display = "none";
+
+
+
+                    } else {  // Si le slider est à gauche (désactivé)
+                        // Ajouter les flèches
+                        svg.style.display = "block";
+                        task.dependances.forEach(dependencyId => {
+                            const dependencyTask = tasks.find(t => t.tache_id === dependencyId);
+                            if (!dependencyTask) {
+                                console.error(`La tâche ${task.tache_id} dépend de la tâche ${dependencyId}, mais cette dernière n'a pas été trouvée.`);
+                                return;
+                            }
+                
+                            const dependencyPosition = taskPositions[dependencyId];
+                            const x1 = horizontalPosition;
+                            const y1 = verticalPosition + taskHeight / 2;
+                            const x2 = dependencyPosition;
+                            const y2 = taskSpacing * tasks.indexOf(dependencyTask) + taskHeight / 2;
+                            drawarrowsvg_en_L(svg, x2, y2, x1, y1);
+                        });
+                    }
+                })
+
+
+
+
+
+
+
+
+
+
+
 
 
                 // Ajout des événements de glisser-déposer
@@ -441,6 +557,7 @@
         });
 
     </script>
-    
+    {% load static %}
+    <script src="{% static "js/js.js" %}"></script>
 </body>
 </html>

@@ -95,7 +95,7 @@ body {
 
 /* Conteneur pour le diagramme de Gantt */
 .gantt-container {
-    width: 60%;  /* Ajuste la largeur du diagramme de Gantt */
+    width: 96%;  /* Ajuste la largeur du diagramme de Gantt */
     overflow-x: auto;
     overflow-y: auto;
     height: 600px; /* Définit une hauteur pour le diagramme de Gantt */
@@ -457,25 +457,35 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
 /* Positionnement de la bulle de chat */
 .btn-chat {
     position: fixed;
+    z-index: 2;
     bottom: 20px;
     right: 20px;
     background-color: #007bff;
     color: white;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    border-radius: 25px; /* Coins arrondis au lieu d'un cercle */
+    padding: 10px 20px; /* Espace autour du texte */
     display: flex;
-    justify-content: center;
     align-items: center;
+    gap: 10px; /* Espacement entre l'icône et le texte */
     cursor: pointer;
-    font-size: 24px; /* Ajuster la taille de l'icône */
+    font-size: 18px; /* Taille du texte */
+    font-weight: bold;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
 }
 
 .btn-chat i {
-    font-size: 24px; /* Taille de l'icône */
+    font-size: 24px;
     color: white;
 }
 
+.btn-chat span {
+    color: white;
+}
+
+.btn-chat:hover {
+    background-color: #f1c40f;
+}
 
 
 /* Cacher les messages par défaut */
@@ -490,3 +500,66 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     align-items: center !important;
 }
 
+.params-div {
+    position: fixed;
+    z-index: 2;
+    top: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%; /* Coins arrondis au lieu d'un cercle */
+    padding: 20px 20px; /* Espace autour du texte */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacement entre l'icône et le texte */
+    cursor: pointer;
+    font-size: 18px; /* Taille du texte */
+    font-weight: bold;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}

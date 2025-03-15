@@ -10,6 +10,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.conf import settings
+from django.views.decorators.csrf import csrf_protect
 import requests
 from django.contrib import messages
 from .models import UserProfile, Projet, TacheRegroupement, Tache, Chatregroupement, ChatProjet, Messages
@@ -240,7 +241,10 @@ def projet(request, projet_name, admin_hash, tache_id=None):
 
     message_projet = json.dumps(message_projet)
     context = {
+        "user": request.user,
+        "user_admin": projet.user_admin,
         "projet": projet,
+        "projet_id":projet.id,
         "admin_hash": admin_hash,
         "projet_name": projet.nom,
         "taches_regroupement": taches_regroupement,
