@@ -17,20 +17,29 @@
     <div id="user-actu" data-user-actu="{{ user }}" style="display: none;"></div>
     <div id="user-admin-const" data-user-admin="{{ user_admin }}" style="display: none;"></div>
 
-    <div class="taches-regroupement-container">
-        {% for regroupement in taches_regroupement %}
-            <div class="taches-regroupement">
-                <h1 class="taches-regroupement-title">{{ regroupement.nom }}</h1>
-                <p class="taches-regroupement-description">{{ regroupement.description }}</p>
-                {% if regroupement.est_terminee == True %}
-                    <button class="taches-regroupement-button completed">✅ Voir les tâches</button>
-                {% else %}
-                    <a href="{% url 'see_tasks' projet_name admin_hash regroupement.id %}" class="taches-regroupement-link pending">⏳ Voir les tâches</a>
-                {% endif %}
-            </div>
-        {% endfor %}
+    <div class="div-card">
+        <div class="taches-regroupement-container">
+            {% for regroupement in taches_regroupement %}
+                <div class="taches-regroupement">
+                    <h1 class="taches-regroupement-title">{{ regroupement.nom }}</h1>
+                    <p class="taches-regroupement-description">{{ regroupement.description }}</p>
+                    {% if regroupement.est_terminee == True %}
+                        <button class="taches-regroupement-button completed">✅ Voir les tâches</button>
+                    {% else %}
+                        <a href="{% url 'see_tasks' projet_name admin_hash regroupement.id %}" class="taches-regroupement-link pending">⏳ Voir les tâches</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+    
+        </div>
 
+        <div class="div-card">
+            <div class="crer_regroupement">
+                <button class="crer_regroupement_btn" id="creer_regroupement"><strong>Créer un regroupement</strong></button>
+            </div>
+        </div>
     </div>
+    
 
     <div id="data-url-add" style="display: none;" data-url-add-qqun="{% url "add_qqun_to_projet" projet_id %}"></div>
     <div id="params" class="params-div">
@@ -155,21 +164,93 @@
 
     
 
-    <div class="crer_regroupement">
-        <button class="crer_regroupement_btn" id="creer_regroupement">Créer un regroupement</button>
+    
+
+    <div class="placement-donut">
+        <div class="div-card">
+            <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
+        </div>
+
+        <div class="custom-list-users">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th class="custom-th">Nom d'utilisateur</th>
+                    </tr>
+                </thead>
+                <tbody class="custom-tbody">
+                    <!-- Les utilisateurs seront ajoutés ici via JavaScript -->
+                </tbody>
+            </table>
+        </div>            
     </div>
-    <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
+    
+    
 
 
-    <label class="switch">
-        <input type="checkbox" id="toggleSwitch">
-        <span class="slider"></span>
-    </label>
+    <script type="text/javascript">
+        fetch("{% url 'gantt_sans_date' projet_name %}")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Données reçues : ", data);  // Vérification du contenu des données
+            const users_data_n1 = data.users;  // Liste des utilisateurs
+            const tbody = document.querySelector('.custom-tbody'); // Sélectionne le corps du tableau
+        
+            users_data_n1.forEach(user => {
+                let username = user;  // Récupérer le nom de l'utilisateur
+                    
+                // Créer une ligne du tableau <tr>
+                const tr = document.createElement('tr');
+                
+                // Créer une cellule de tableau <td> et ajouter le nom de l'utilisateur
+                const td = document.createElement('td');
+                td.classList.add('custom-td'); // Applique la classe pour la cellule
+                td.textContent = username; // Ajouter le nom de l'utilisateur à la cellule
+                
+                // Ajouter la cellule à la ligne du tableau
+                tr.appendChild(td);
+        
+                // Ajouter la ligne dans le corps du tableau
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des données:', error));
+    </script>
+    
+    
+    
 
-    <p id="state" style="display: none;">État: 0</p>
-    <div class="gantt-container" id="gantt-container">
-        <div class="gantt-tasks" id="gantt-tasks"></div>
-    </div> 
+    
+    
+
+    <div class="div-card">
+        <div class="btn-fleche-plus-texte">
+            <label class="switch">
+                <input type="checkbox" id="toggleSwitch">
+                <span class="slider"></span>
+            </label>
+            <label>Cacher les fleches</label>
+        </div>
+        
+
+        <div class="btn-fleche-plus-texte">
+            <label class="switch">
+                <input type="checkbox" id="color">
+                <span class="slider"></span>
+            </label>
+            <label>Coloriastion des taches selon leur statu</label>
+        </div>
+
+
+    
+        <p id="state" style="display: none;">État: 0</p>
+        <div class="gantt-container" id="gantt-container">
+            <div class="gantt-tasks" id="gantt-tasks"></div>
+        </div> 
+    </div>
+    
+
+    
     
 
     <script type="text/javascript">

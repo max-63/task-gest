@@ -11,7 +11,8 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    justify-content: center;
+    justify-content: flex-start;
+    margin: 20px;
 }
 
 .taches-regroupement {
@@ -23,6 +24,7 @@ body {
     text-align: center;
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
+    margin-top: 20px;
 }
 
 .taches-regroupement:hover {
@@ -73,9 +75,10 @@ body {
     margin-top: 20px;
 }
 .crer_regroupement_btn {
-    color: #f1c40f; 
-    background-color:#3498db; 
-    text-decoration: none;
+    color: #ffcc00 !important;
+    background-color:#3498db !important; 
+    text-decoration: none !important;
+    margin-bottom: 20px !important;
 }
 
 #creer_regroupement {
@@ -101,6 +104,9 @@ body {
     height: 600px; /* Définit une hauteur pour le diagramme de Gantt */
     position: relative; /* Ajouté pour permettre aux tâches positionnées absolument de se placer correctement */
     margin-top: 3rem;
+    margin-bottom: 3rem;
+    margin-left: 2%;
+    margin-right: 2%;
     border: 2px solid #f1c40f;  /* Bordure jaune (plus foncée pour une meilleure visibilité) */
     border-radius: 8px;  /* Coins arrondis */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);  /* Ajoute une ombre légère pour plus de profondeur */
@@ -132,6 +138,8 @@ body {
     display: block;
     width: max-content; /* Adapte la largeur au contenu */
     min-width: 100%; /* Empêche le SVG d'être plus petit que son conteneur */
+    overflow-x:hidden;
+    overflow-y: hidden;
 }
 
 
@@ -524,6 +532,8 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     display: inline-block;
     width: 60px;
     height: 34px;
+    margin-left: 30px;
+    margin-right: 20px;
 }
 
 .switch input {
@@ -542,6 +552,7 @@ a[style="color: #f1c40f; background-color:#3498db;"]:hover {
     background-color: #ccc;
     transition: .4s;
     border-radius: 34px;
+
 }
 
 .slider:before {
@@ -562,4 +573,76 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+.div-card {
+    border-radius: 20px;
+    display: block;
+    background-color: #f7ebeb;
+    justify-content: center;
+    height: auto;
+    margin: 20px;
+}
+
+.placement-donut{
+    display: flex;
+    justify-content: flex-start;
+}
+
+.btn-fleche-plus-texte {
+    margin-left: 20px;
+    display: flex; /* Assure-toi que les éléments sont sur la même ligne */
+    align-items: center; /* Aligne les éléments verticalement */
+}
+
+/* Style pour le conteneur du tableau (ajout de la hauteur maximale et overflow) */
+.custom-list-users {
+    width: 100%;
+    max-width: 100%; /* Limite la largeur du tableau */
+    margin: 0 auto; /* Centre le tableau horizontalement */
+    padding: 20px;
+    background-color: #f7ebeb;
+    border-radius: 8px;
+    overflow: hidden;
+    max-height: 400px; /* Hauteur maximale du conteneur (ajuste à ta convenance) */
+    overflow-y: auto; /* Active le défilement vertical si le contenu dépasse */
+}
+
+/* Style pour le tableau lui-même */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse; /* Pour que les bordures se rejoignent */
+    border-radius: 8px; /* Bords arrondis pour l'ensemble du tableau */
+    overflow: hidden; /* Assure que les bords arrondis ne sont pas coupés */
+    border: 1px solid #ddd; /* Bordure générale autour du tableau */
+}
+
+/* Style pour les en-têtes de colonne */
+.custom-th {
+    background-color: #3498db; /* Bleu normal pour le fond */
+    color: #f1c40f; /* Jaune pétant pour le texte */
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+    border-top-left-radius: 8px; /* Arrondi du coin supérieur gauche */
+    border-top-right-radius: 8px; /* Arrondi du coin supérieur droit */
+}
+
+/* Style pour les cellules de données */
+.custom-td {
+    padding: 12px;
+    text-align: left;
+    background-color: #eaf4fc; /* Bleu très pâle pour les cases */
+    border-bottom: 1px solid #ddd;
+}
+
+/* Style pour les lignes au survol */
+.custom-tr:hover .custom-td {
+    background-color: #d6ebfa; /* Bleu un peu plus foncé au survol */
+}
+
+/* Style pour la dernière ligne du tableau (pour avoir un coin arrondi en bas) */
+.custom-tbody tr:last-child .custom-td {
+    border-bottom-left-radius: 8px; /* Coin inférieur gauche arrondi */
+    border-bottom-right-radius: 8px; /* Coin inférieur droit arrondi */
 }
