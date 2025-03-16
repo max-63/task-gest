@@ -582,6 +582,7 @@ input:checked + .slider:before {
     justify-content: center;
     height: auto;
     margin: 20px;
+    
 }
 
 .placement-donut{
@@ -645,4 +646,13 @@ input:checked + .slider:before {
 .custom-tbody tr:last-child .custom-td {
     border-bottom-left-radius: 8px; /* Coin inférieur gauche arrondi */
     border-bottom-right-radius: 8px; /* Coin inférieur droit arrondi */
+}
+
+.graphique-evo-taches-par-jour {
+    height: 45vh; /* Limite la hauteur à 30% de la hauteur de l'écran */
+    width: auto;
+    overflow-x: auto;
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
 }

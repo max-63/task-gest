@@ -23,6 +23,11 @@ from datetime import timedelta
 from django.db.models import Sum
 from collections import defaultdict, deque
 from django.core.serializers.json import DjangoJSONEncoder
+from collections import Counter
+from django.utils.timezone import is_aware, make_aware
+import pandas as pd
+import datetime
+from django.utils import timezone
 
 def is_normal_or_staff(user):
     return user.is_authenticated and (not user.is_superuser or user.is_staff)
@@ -206,10 +211,13 @@ def projet(request, projet_name, admin_hash, tache_id=None):
             tache.est_terminee = request.POST.get("statu") #== "terminé"
             if tache.est_terminee == 0:
                 tache.est_terminee = 0
+                tache.date_fini = None
             if tache.est_terminee == 1:
                 tache.est_terminee = 1
+                tache.date_fini = None
             if tache.est_terminee == 2:
                 tache.est_terminee = 2
+                tache.date_fini = timezone.now
             print(tache.est_terminee)
             tache.save()
 
@@ -526,4 +534,28 @@ def add_user_to_project(request, projet_id):
             return JsonResponse({'success': False, 'message': str(e)}, status=500)
     return render(request, 'pannel.html')
 
-from django.shortcuts import redirect
+
+
+def graph_taches_par_jour(request, projet_id):
+    projet = get_object_or_404(Projet, id=projet_id)
+
+    # Récupérer toutes les tâches terminées avec une date de fin
+    taches_terminees = Tache.objects.filter(
+        regroupement__projet=projet, est_terminee=2, date_fini__isnull=False
+    ).values_list("date_fini", flat=True)
+
+    dates_completion = [make_aware(date).date() if not is_aware(date) else date.date() for date in taches_terminees]
+
+
+    # Compter le nombre de tâches terminées par jour
+    count_per_day = Counter(dates_completion)
+
+    # Transformer en DataFrame Pandas pour trier les dates
+    df = pd.DataFrame(list(count_per_day.items()), columns=['date', 'tasks_completed'])
+    df = df.sort_values('date')
+
+    # Convertir les dates en string pour JSON
+    df['date'] = df['date'].astype(str)
+
+
+    return JsonResponse(df.to_dict(orient='list'))

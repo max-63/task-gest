@@ -68,6 +68,7 @@ class Tache(models.Model):
     est_terminee = models.IntegerField(default=0) #de 0 a 2, 0, a faire , 1 en cour , 2 fait
     dependantes = models.ManyToManyField('self', symmetrical=False, blank=True)  # Plusieurs dépendances possibles
     duree = models.IntegerField(default=2) 
+    date_fini = models.DateTimeField(null=True, blank=True)
     assignee_a = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def get_regroup(self):

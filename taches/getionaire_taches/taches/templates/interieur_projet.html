@@ -182,8 +182,57 @@
                     <!-- Les utilisateurs seront ajoutés ici via JavaScript -->
                 </tbody>
             </table>
-        </div>            
+        </div>       
+        
     </div>
+
+
+    <div class="div-card">
+        <div class="graphique-evo-taches-par-jour">
+            <canvas id="tachesParJourChart"></canvas>
+        </div>
+    </div>     
+
+
+    <div id="url-graph_taches-jour" style="display: non;" data-url="{% url "graph_tache_fini_par_jour" projet_id %}"></div>
+
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    const url_tache_par_jour = document.getElementById('url-graph_taches-jour').getAttribute('data-url');  // Remplace avec le vrai nom du projet
+
+    fetch(url_tache_par_jour)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        const ctx = document.getElementById("tachesParJourChart").getContext("2d");
+
+        new Chart(ctx, {
+            type: "line",
+            data: {
+            labels: data.date, // Liste des dates
+            datasets: [{
+                label: "Tâches terminées par jour",
+                data: data.tasks_completed, // Nombre de tâches terminées par jour
+                borderColor: "rgb(75, 192, 192)",
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderWidth: 2,
+                fill: true
+            }]
+            },
+            options: {
+            responsive: true,
+            scales: {
+                x: { title: { display: true, text: "Date" } },
+                y: { title: { display: true, text: "Tâches terminées" }, beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+            }
+        });
+        })
+        .catch(error => console.error("Erreur JSON:", error));
+    </script>
     
     
 
