@@ -477,10 +477,6 @@
                 taskBar.textContent = task.name;
                 taskBar.style.width = `${task.duree * taskWidth}px`; // La largeur de la barre dépend de la durée de la tâche
 
-                // Utilisation de la couleur de regroupement pour chaque tâche
-                const regroupementColor = regroupementCouleurs[task.regroupement[0]] || '#CCCCCC';
-                taskBar.style.backgroundColor = regroupementColor;
-
                 // Position verticale des tâches
                 const verticalPosition = taskSpacing * tasks.indexOf(task);
                 taskBar.style.top = `${verticalPosition}px`;
@@ -488,6 +484,35 @@
                 // Position horizontale des tâches selon la position calculée
                 let horizontalPosition = taskPositions[task.tache_id] //* dependencySpacing; // Utilisation des positions
                 taskBar.style.left = `${horizontalPosition}px`;
+
+                let taskColor = '';
+                const regroupementColor = regroupementCouleurs[task.regroupement[0]] || '#CCCCCC';  // Par défaut, couleur du regroupement
+                taskColor = regroupementColor;  // Utilisation du regroupement comme couleur par défaut
+
+                // Appliquer la couleur initiale
+                taskBar.style.backgroundColor = taskColor;
+
+                // Ajouter l'événement de changement pour les couleurs (via checkbox)
+                document.getElementById('color').addEventListener("change", function() {
+                    if (this.checked) {
+                        // Si le checkbox est coché, appliquer la couleur selon le statut (est_terminee)
+                        switch (task.est_terminee) {
+                            case 0: // A faire (rouge)
+                                taskBar.style.backgroundColor = 'red';
+                                break;
+                            case 1: // En cours (jaune)
+                                taskBar.style.backgroundColor = 'yellow';
+                                break;
+                            case 2: // Terminée (vert)
+                                taskBar.style.backgroundColor = 'green';
+                                break;
+                        }
+                    } else {
+                        // Si le checkbox n'est pas coché, appliquer la couleur selon le regroupement
+                        taskBar.style.backgroundColor = regroupementCouleurs[task.regroupement[0]] || '#CCCCCC';
+                    }
+                });
+
 
                 
                 const url = "{% url 'modifier_tache' projet_name 0 admin_hash %}".replace('0', task.tache_id);
@@ -550,9 +575,6 @@
 
 
 
-
-
-
                 document.getElementById('toggleSwitch').addEventListener("change", function() {
                     const svg = document.querySelector('svg');
                     if (this.checked) {  // Si le slider est à droite (activé)
@@ -579,15 +601,6 @@
                         });
                     }
                 })
-
-
-
-
-
-
-
-
-
 
 
 
@@ -631,6 +644,46 @@
                     });
                 });
             });
+
+            // Événement de changement pour la checkbox de coloration
+            document.getElementById('color').addEventListener("change", function() {
+                // Cibler toutes les barres de tâches
+                const allTaskBars = document.querySelectorAll('.gantt-bar');
+                
+                // Vérifier si la checkbox est cochée
+                const isColorByStatus = this.checked; // true si la checkbox est cochée, false si elle ne l'est pas
+
+                // Boucle pour chaque barre de tâche
+                allTaskBars.forEach(taskbar => {
+                    // Récupérer l'ID de la tâche à partir de l'élément parent
+                    const taskRow = taskbar.closest('.task-row');
+                    const taskId = taskRow.getAttribute('data-task-id'); // Récupérer l'ID de la tâche depuis le data-task-id
+
+                    // Trouver la tâche correspondante dans les données
+                    const task = tasks.find(t => t.tache_id === parseInt(taskId));
+
+                    // Appliquer la couleur en fonction de l'état de la checkbox
+                    if (task) {
+                        if (isColorByStatus) {
+                            if (task.est_terminee == 0) {
+                                taskbar.style.backgroundColor = '#e57373';
+                            } if (task.est_terminee == 1) {
+                                taskbar.style.backgroundColor = '#ff9800';
+                            } if (task.est_terminee == 2) {
+                                taskbar.style.backgroundColor = '#4caf50'; 
+                            }
+                        } else {
+                            // Si la checkbox n'est pas cochée, colorier selon le regroupement
+                            const regroupementColor = regroupementCouleurs[task.regroupement[0]] || '#CCCCCC';
+                            taskbar.style.backgroundColor = regroupementColor;
+                        }
+                    }
+                });
+            });
+
+
+            taskbar.style.backgroundColor = 'red';
+
 
         })
         .catch(error => {

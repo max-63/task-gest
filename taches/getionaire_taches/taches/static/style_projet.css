@@ -599,7 +599,7 @@ input:checked + .slider:before {
 .custom-list-users {
     width: 100%;
     max-width: 100%; /* Limite la largeur du tableau */
-    margin: 0 auto; /* Centre le tableau horizontalement */
+    margin: 20px; /* Centre le tableau horizontalement */
     padding: 20px;
     background-color: #f7ebeb;
     border-radius: 8px;

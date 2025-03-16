@@ -432,7 +432,7 @@ def gantt_sans_date(request, projet_name):
                 'dependances': [dependance.id for dependance in tache.dependantes.all()],  # On récupère les IDs des dépendances
                 'regroupement': [regroupement.nom for regroupement in tache.regroupement.all()],
                 'description': tache.description,
-                'est_terminee': bool(tache.est_terminee),
+                'est_terminee': int(tache.est_terminee),
                 'tache_id': tache.id,
                 
             }
