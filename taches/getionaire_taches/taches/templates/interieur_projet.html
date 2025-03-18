@@ -17,6 +17,13 @@
     <div id="user-actu" data-user-actu="{{ user }}" style="display: none;"></div>
     <div id="user-admin-const" data-user-admin="{{ user_admin }}" style="display: none;"></div>
 
+    <sidebar>
+        {% for projet in projets %}
+            <div>{{ projet.nom }}</div>
+            
+        {% endfor %}
+    </sidebar>
+
     <div class="div-card">
         <div class="taches-regroupement-container">
             {% for regroupement in taches_regroupement %}
@@ -168,9 +175,17 @@
 
     <div class="placement-donut">
         <div class="div-card">
-            <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
+            <div class="graphique-repartition-regroup">
+                <canvas id="donutChart" width="400" height="400" class="donut-chart"></canvas>
+            </div>
         </div>
-
+        <div class="div-card">
+            <div class="graphique-repartition-statuts">
+                <canvas id="repartitionStatutsChart"></canvas>
+            </div>
+        </div>
+    
+        <div id="url-graph_repartition_statuts" style="display: none;" data-url="{% url 'graph_repartition_par_statut' projet_id %}"></div>
         <div class="custom-list-users">
             <table class="custom-table">
                 <thead>
@@ -191,6 +206,7 @@
         <div class="graphique-evo-taches-par-jour">
             <canvas id="tachesParJourChart"></canvas>
         </div>
+        
     </div>     
 
 
@@ -233,7 +249,42 @@
         })
         .catch(error => console.error("Erreur JSON:", error));
     </script>
+
+
     
+
+        
+
+    <script>
+        const url_repartition_statuts = document.getElementById('url-graph_repartition_statuts').getAttribute('data-url');
+    
+        fetch(url_repartition_statuts)
+            .then(response => response.json())
+            .then(data => {
+                const ctx = document.getElementById("repartitionStatutsChart").getContext("2d");
+    
+                new Chart(ctx, {
+                    type: "pie", // Graphique circulaire
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw + ' tâches';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error("Erreur JSON:", error));
+    </script>
     
 
 

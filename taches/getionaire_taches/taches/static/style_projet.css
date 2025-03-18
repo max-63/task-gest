@@ -148,7 +148,6 @@ body {
 canvas#donutChart {
     display: block;
     margin: 20px auto;
-    max-width: 400px;
 }
 
 /* Styles pour les inputs et textareas */
@@ -582,6 +581,7 @@ input:checked + .slider:before {
     justify-content: center;
     height: auto;
     margin: 20px;
+    width: auto;
     
 }
 
@@ -598,14 +598,14 @@ input:checked + .slider:before {
 
 /* Style pour le conteneur du tableau (ajout de la hauteur maximale et overflow) */
 .custom-list-users {
+    height: 45vh; /* Limite la hauteur à 30% de la hauteur de l'écran */
     width: 100%;
-    max-width: 100%; /* Limite la largeur du tableau */
     margin: 20px; /* Centre le tableau horizontalement */
     padding: 20px;
     background-color: #f7ebeb;
-    border-radius: 8px;
+    border-radius: 20px;
     overflow: hidden;
-    max-height: 400px; /* Hauteur maximale du conteneur (ajuste à ta convenance) */
+    
     overflow-y: auto; /* Active le défilement vertical si le contenu dépasse */
 }
 
@@ -650,9 +650,30 @@ input:checked + .slider:before {
 
 .graphique-evo-taches-par-jour {
     height: 45vh; /* Limite la hauteur à 30% de la hauteur de l'écran */
-    width: auto;
+    width: 100%;
     overflow-x: auto;
     align-items: center;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between; /* Espace égal entre les graphiques */
+    gap: 20px;               /* Optionnel : pour ajouter un espacement entre les graphiques */
+    flex-wrap: wrap;      
+}
+
+.graphique-repartition-statuts {
+    height: 40vh;
+    display: flex;
+    padding: 30px;
+}
+
+.graphique-repartition-regroup {
+    height: 40vh;
+    display: flex;
+    padding: 30px;
+}
+
+.donut-chart {
+    justify-content: center;
+    align-items: center;
+    width: 526px !important;
+    height: 526px !important;
 }

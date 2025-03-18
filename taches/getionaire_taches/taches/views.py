@@ -28,6 +28,7 @@ from django.utils.timezone import is_aware, make_aware
 import pandas as pd
 import datetime
 from django.utils import timezone
+from django.db.models import Q
 
 def is_normal_or_staff(user):
     return user.is_authenticated and (not user.is_superuser or user.is_staff)
@@ -247,6 +248,15 @@ def projet(request, projet_name, admin_hash, tache_id=None):
     except:
         message_projet = [{}]
 
+
+    projets_admin_est_dedans = Projet.objects.filter(user_admin=request.user.username)
+
+    # Projets où l'utilisateur est collaborateur
+    projets_collaborateur_est_dedans = Projet.objects.filter(collaborateurs__icontains=request.user.username)
+
+    # Combinaison des deux requêtes
+    projets = projets_admin_est_dedans.union(projets_collaborateur_est_dedans)
+
     message_projet = json.dumps(message_projet)
     context = {
         "user": request.user,
@@ -261,6 +271,7 @@ def projet(request, projet_name, admin_hash, tache_id=None):
         "tache": tache,
         "message_projet":message_projet,
         "projet_id": projet.id,
+        "projets": projets,
     }
     
     return render(request, 'interieur_projet.html', context)
@@ -544,18 +555,62 @@ def graph_taches_par_jour(request, projet_id):
         regroupement__projet=projet, est_terminee=2, date_fini__isnull=False
     ).values_list("date_fini", flat=True)
 
+    # Obtenir les dates de complétion des tâches, en prenant en compte si elles sont aware
     dates_completion = [make_aware(date).date() if not is_aware(date) else date.date() for date in taches_terminees]
-
 
     # Compter le nombre de tâches terminées par jour
     count_per_day = Counter(dates_completion)
 
+    # Définir la plage de dates pour l'affichage (de la première à la dernière date de la liste)
+    if dates_completion:
+        min_date = min(dates_completion)
+        max_date = max(dates_completion)
+    else:
+        min_date = datetime.today().date()
+        max_date = min_date
+
+    # Créer une liste de toutes les dates entre min_date et max_date
+    all_dates = pd.date_range(start=min_date, end=max_date).date
+
+    # Ajouter les dates manquantes avec 0 tâches
+    full_count = {date: count_per_day.get(date, 0) for date in all_dates}
+
     # Transformer en DataFrame Pandas pour trier les dates
-    df = pd.DataFrame(list(count_per_day.items()), columns=['date', 'tasks_completed'])
+    df = pd.DataFrame(list(full_count.items()), columns=['date', 'tasks_completed'])
     df = df.sort_values('date')
 
     # Convertir les dates en string pour JSON
     df['date'] = df['date'].astype(str)
 
-
     return JsonResponse(df.to_dict(orient='list'))
+
+
+def graph_repartition_par_statut(request, projet_id):
+    projet = get_object_or_404(Projet, id=projet_id)
+
+    # Récupérer toutes les tâches du projet
+    taches = Tache.objects.filter(regroupement__projet=projet)
+
+    # Compter le nombre de tâches par statut
+    statut_count = Counter(tache.est_terminee for tache in taches)
+
+    # Organiser les résultats pour le graphique
+    data = {
+        'labels': ['À faire', 'En cours', 'Terminée'],
+        'datasets': [{
+            'data': [
+                statut_count.get(0, 0),  # Nombre de tâches à faire
+                statut_count.get(1, 0),  # Nombre de tâches en cours
+                statut_count.get(2, 0),  # Nombre de tâches terminées
+            ],
+            'backgroundColor': ['#f39c12', '#3498db', '#2ecc71'],  # Couleurs du graphique (à faire, en cours, terminée)
+        }]
+    }
+
+    return JsonResponse(data)
+
+
+def sidebar(request):
+    projet_user = Projet.objects.filter(user_admin=request.user)
+    json.dumps(projet_user)
+    return JsonResponse()

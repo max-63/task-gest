@@ -17,4 +17,5 @@ urlpatterns = [
     path('update_task_position/<str:projet_name>/<str:admin_hash>/', views.update_task_position, name='update_task_position'),
     path('add_qqun_to_projet/<int:projet_id>/', views.add_user_to_project, name='add_qqun_to_projet'),
     path('graph_tache_fini_par_jour/<int:projet_id>/', views.graph_taches_par_jour, name="graph_tache_fini_par_jour"),
+    path('graph_repartition_par_statut/<int:projet_id>/', views.graph_repartition_par_statut, name="graph_repartition_par_statut"),
 ]
